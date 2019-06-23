@@ -1,0 +1,3 @@
+protocol MessageDelivery : 27 {
+    method deliver_message(anydata message) { }
+}

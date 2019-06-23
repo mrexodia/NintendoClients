@@ -1,0 +1,384 @@
+
+protocol DataStoreSmm : 115 {
+	struct PersistenceTarget {
+		pid owner_id = 0;
+		uint16 persistence_id = 65535;
+	}
+
+	struct DataStorePermission {
+		uint8 permission;
+		list<pid> recipients;
+	}
+	
+	struct DataStoreRatingInfo {
+		sint64 total_value;
+		uint32 count;
+		sint64 initial_value;
+	}
+	
+	struct DataStoreRatingInfoWithSlot {
+		uint8 slot;
+		DataStoreRatingInfo info;
+	}
+
+	struct DataStoreGetMetaParam {
+		uint64 data_id = 0;
+		PersistenceTarget persistence_target;
+		uint8 result_option = 0;
+		uint64 access_password = 0;
+	}
+
+	struct DataStoreMetaInfo {
+		uint64 data_id;
+		pid owner_id;
+		uint32 size;
+		string name;
+		uint16 data_type;
+		qbuffer meta_binary;
+		DataStorePermission permission;
+		DataStorePermission delete_permission;
+		datetime create_time;
+		datetime update_time;
+		uint16 period;
+		uint8 status;
+		uint32 referred_count;
+		uint32 refer_data_id;
+		uint32 flag;
+		datetime referred_time;
+		datetime expire_time;
+		list<string> tags;
+		list<DataStoreRatingInfoWithSlot> ratings;
+	}
+
+	struct DataStorePrepareGetParam {
+		uint64 data_id = 0;
+		uint32 lock_id = 0;
+		PersistenceTarget persistence_target;
+		uint64 access_password = 0;
+		list<string> extra_data;
+	}
+
+	struct DataStoreKeyValue {
+		string key;
+		string value;
+	}
+
+	struct DataStoreReqGetInfo {
+		string url;
+		list<DataStoreKeyValue> headers;
+		uint32 size;
+		buffer root_ca_cert;
+		uint64 data_id;
+	}
+
+	struct DataStorePreparePostParam {
+		uint32 size;
+		string name;
+		uint16 data_type;
+		qbuffer meta_binary;
+		DataStorePermission permission;
+		DataStorePermission delete_permission;
+		uint32 flag;
+		uint16 period;
+		uint32 refer_data_id;
+		list<string> tags;
+		list<DataStoreRatingInitParamWithSlot> rating_init_params;
+		DataStorePersistenceInitParam persistence_init_param;
+		list<string> extra_data;
+	}
+
+	struct DataStoreRatingInitParamWithSlot {
+		sint8 slot;
+		DataStoreRatingInitParam param;
+	}
+
+	struct DataStoreRatingInitParam {
+		uint8 flag;
+		uint8 internal_flag;
+		uint8 lock_type;
+		sint64 initial_value;
+		sint32 range_min;
+		sint32 range_max;
+		sint8 period_hour;
+		sint16 period_duration;
+	}
+
+	struct DataStorePersistenceInitParam {
+		uint16 persistence_slot_id;
+		bool delete_last_object;
+	}
+
+	struct DataStoreReqPostInfo {
+		uint64 data_id;
+		string url;
+		list<DataStoreKeyValue> headers;
+		list<DataStoreKeyValue> form;
+		buffer root_ca_cert;
+	}
+
+	struct DataStoreCompletePostParam {
+		uint64 data_id;
+		bool is_success;
+	}
+
+	struct DataStoreChangeMetaCompareParam {
+		uint32 comparison_flag;
+		string name;
+		DataStorePermission permission;
+		DataStorePermission delete_permission;
+		uint16 period;
+		qbuffer meta_binary;
+		list<string> tags;
+		uint32 referred_count;
+		uint16 data_type;
+		uint8 status;
+	}
+
+	struct DataStoreChangeMetaParam {
+		uint64 data_id;
+		uint32 modifies_flag;
+		string name;
+		DataStorePermission permission;
+		DataStorePermission delete_permission;
+		uint16 period;
+		qbuffer meta_binary;
+		list<string> tags;
+		uint64 update_password;
+		uint32 referred_count;
+		uint16 data_type;
+		uint8 status;
+		DataStoreChangeMetaCompareParam compare_param;
+	}
+
+	struct DataStoreInfoStuff {
+		uint32 unk1;
+		uint32 stars_received;
+		DataStoreMetaInfo info;
+	}
+
+	struct DataStoreFileServerObjectInfo {
+		uint64 unk;
+		DataStoreReqGetInfo info;
+	}
+
+	struct DataStoreRatingTarget {
+		uint64 data_id;
+		sint8 slot;
+	}
+
+	struct DataStoreRateObjectParam {
+		sint32 rating_value;
+		uint64 access_password;
+	}
+	
+	struct UnknownStruct {
+		uint32 unk1;
+		uint32 unk2;
+	}
+	
+	struct UnknownStruct2 {
+		uint64 data_id;
+		uint8 unk2;
+	}
+
+	struct CourseRecordInfo {
+		uint64 data_id;
+		uint8 unk2;
+		pid world_record_pid;
+		pid first_clear_pid;
+		uint32 world_record;
+		datetime world_record_date;
+		datetime first_clear_date;
+	}
+
+	struct UnknownStruct4 {
+		uint64 data_id;
+		uint32 unk2;
+	}
+
+	struct UnknownStruct5 {
+		uint8 unk1;
+		uint32 unk2;
+		uint32 unk3;
+	}
+
+	struct UnknownStruct6 {
+		uint64 data_id;
+		uint32 unk2;
+		uint32 unk3;
+		uint16 unk4;
+	}
+
+	struct UnknownStruct7 {
+		#revision 1
+		uint8 unk1;
+		list<pid> pids;
+		uint8 unk3;
+		list<uint32> unk4;
+		uint16 unk5;
+		datetime unk6;
+		datetime unk7;
+		datetime unk8;
+		datetime unk9;
+		uint32 unk10;
+		list<string> unk11;
+		uint8 unk12;
+		uint8 unk13;
+		UnknownStruct unk14;
+		uint8 unk15;
+		uint32 unk16;
+		bool unk17;
+	}
+
+	struct MethodParam49 {
+		uint32 unk1;
+		UnknownStruct5 unk2;
+		uint8 unk3;
+		UnknownStruct unk4;
+	}
+
+	struct MethodParam50 {
+		uint32 magic;
+		list<uint64> data_ids;
+		uint8 unk;
+	}
+
+	struct MethodParam87 {
+		uint64 unk1;
+		string unk2;
+		uint8 unk3;
+		string unk4;
+	}
+
+	struct MethodParam59 {
+		DataStorePreparePostParam unk1;
+		uint64 unk2;
+		string unk3;
+	}
+
+	struct MethodParam71 {
+		uint64 unk1;
+		uint8 unk2;
+		uint32 unk3;
+	}
+
+	method(8) get_meta(DataStoreGetMetaParam param) {
+		DataStoreMetaInfo info;
+	}
+
+	method(24) prepare_post_object(DataStorePreparePostParam param) {
+		DataStoreReqPostInfo info;
+	}
+
+	method(25) prepare_get_object(DataStorePrepareGetParam param) {
+		DataStoreReqGetInfo info;
+	}
+
+	method(26) complete_post_object(DataStoreCompletePostParam param) { }
+
+	method(36) get_metas_multiple_param(list<DataStoreGetMetaParam> params) {
+		list<DataStoreMetaInfo> infos;
+		list<result> results;
+	}
+
+	method(38) change_meta(DataStoreChangeMetaParam param) { }
+
+	method(40) rate_objects(list<DataStoreRatingTarget> targets, list<DataStoreRateObjectParam> params, bool transactional, bool fetch_ratings) {
+		list<DataStoreRatingInfo> ratings;
+		list<result> results;
+	}
+
+	method(45) get_file_server_object_infos(list<uint64> object_ids) {
+		list<DataStoreFileServerObjectInfo> infos;
+	}
+
+	method(48) method48(list<UnknownStruct6> param) { }
+
+	method(49) method49(MethodParam49 param) {
+		list<DataStoreInfoStuff> infos;
+		list<result> results;
+	}
+
+	method(50) method50(MethodParam50 param) {
+		list<DataStoreInfoStuff> infos;
+		list<result> results;
+	}
+
+	method(53) method53(list<UnknownStruct4> unknown1, list<qbuffer> unknown2) {
+		list<result> results;
+	}
+
+	method(54) method54(UnknownStruct4 param) {
+		list<qbuffer> results;
+	}
+
+	method(57) method57(DataStoreCompletePostParam param) {
+		string unknown;
+	}
+
+	method(59) method59(MethodParam59 param) {
+		DataStoreReqPostInfo infos;
+	}
+
+	method(60) method60(uint32 unknown1, UnknownStruct7 unknown2, list<string> unknown3) {
+		list<DataStoreInfoStuff> info;
+	}
+
+	method(61) method61(uint32 param) {
+		list<uint32> unknown;
+	}
+
+	method(64) method64(UnknownStruct7 unknown1, list<string> unknown2) {
+		list<DataStoreInfoStuff> infos;
+	}
+
+	method(65) method65(UnknownStruct7 unknown1, list<string> unknown2) {
+		list<DataStoreInfoStuff> infos;
+	}
+
+	method(66) method66(UnknownStruct7 unknown1, list<string> unknown2) {
+		list<DataStoreInfoStuff> infos;
+	}
+
+	method(67) method67(UnknownStruct7 unknown1, list<string> unknown2) {
+		list<DataStoreInfoStuff> infos;
+	}
+
+	method(68) method68(UnknownStruct7 unknown1, list<string> unknown2) {
+		list<DataStoreInfoStuff> infos;
+	}
+
+	method(71) method71(MethodParam71 param) { }
+
+	method(72) method72(UnknownStruct2 param) {
+		CourseRecordInfo unknown;
+	}
+	
+	method(74) method74(uint32 param) {
+		list<string> unknown;
+	}
+
+	method(76) method76(list<uint64> unknown) {
+		list<uint32> unknown;
+	}
+
+	method(78) method78(list<UnknownStruct2> unknown, DataStoreGetMetaParam get_meta_param) {
+		list<DataStoreMetaInfo> infos;
+		list<CourseRecordInfo> unknown;
+		list<result> results;
+	}
+	
+	method(79) method79(uint32 unk1) {
+		bool result;
+	}
+
+	method(81) method81(UnknownStruct7 unknown1, list<string> unknown2) {
+		list<DataStoreInfoStuff> infos;
+	}
+
+	method(82) method82(UnknownStruct7 unknown1, list<string> unknown2) {
+		list<DataStoreInfoStuff> infos;
+	}
+
+	method(87) method87(MethodParam87 param) { }
+}
