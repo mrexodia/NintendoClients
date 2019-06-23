@@ -1,0 +1,19 @@
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/3/syntax.html
+name: NintendoClients proto
+file_extensions: [proto]
+scope: source.proto
+contexts:
+  main:
+    # numbers
+    - match: '\b(0x)?[0-9a-fA-F]+\b'
+      scope: constant.numeric.example-c
+
+    # keywords
+    - match: '\b(protocol|method|struct|enum)\b'
+      scope: keyword.control
+
+    # types
+    - match: '\b(u8|u16|u32|u64|s8|s16|s32|s64|float|double|bool|pid|result|datetime|string|stationurl|buffer|qbuffer|anydata|list)\b'
+      scope: storage.type
