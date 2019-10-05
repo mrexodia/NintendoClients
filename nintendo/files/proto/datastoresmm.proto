@@ -170,7 +170,49 @@ protocol DataStoreSmm : 115 {
 		sint32 rating_value;
 		uint64 access_password;
 	}
-	
+
+	struct CourseRecordInfo {
+		uint64 data_id;
+		uint8 unk2;
+		pid world_record_pid;
+		pid first_clear_pid;
+		uint32 world_record;
+		datetime world_record_date;
+		datetime first_clear_date;
+	}
+
+	struct MethodParam49 {
+		uint32 unk1;
+		UnknownStruct5 unk2;
+		uint8 unk3;
+		UnknownStruct unk4;
+	}
+
+	struct MethodParam50 {
+		uint32 magic;
+		list<uint64> data_ids;
+		uint8 unk;
+	}
+
+	struct MethodParam59 {
+		DataStorePreparePostParam unk1;
+		uint64 unk2;
+		string unk3;
+	}
+
+	struct MethodParam71 {
+		uint64 unk1;
+		uint8 unk2;
+		uint32 unk3;
+	}
+
+	struct MethodParam87 {
+		uint64 unk1;
+		string unk2;
+		uint8 unk3;
+		string unk4;
+	}
+
 	struct UnknownStruct {
 		uint32 unk1;
 		uint32 unk2;
@@ -181,14 +223,14 @@ protocol DataStoreSmm : 115 {
 		uint8 unk2;
 	}
 
-	struct CourseRecordInfo {
-		uint64 data_id;
+	struct UnknownStruct3 {
+		uint64 unk1;
 		uint8 unk2;
-		pid world_record_pid;
-		pid first_clear_pid;
-		uint32 world_record;
-		datetime world_record_date;
-		datetime first_clear_date;
+		uint32 unk3;
+		uint32 unk4;
+		uint32 unk5;
+		datetime unk6;
+		datetime unk7;
 	}
 
 	struct UnknownStruct4 {
@@ -228,38 +270,6 @@ protocol DataStoreSmm : 115 {
 		uint8 unk15;
 		uint32 unk16;
 		bool unk17;
-	}
-
-	struct MethodParam49 {
-		uint32 unk1;
-		UnknownStruct5 unk2;
-		uint8 unk3;
-		UnknownStruct unk4;
-	}
-
-	struct MethodParam50 {
-		uint32 magic;
-		list<uint64> data_ids;
-		uint8 unk;
-	}
-
-	struct MethodParam87 {
-		uint64 unk1;
-		string unk2;
-		uint8 unk3;
-		string unk4;
-	}
-
-	struct MethodParam59 {
-		DataStorePreparePostParam unk1;
-		uint64 unk2;
-		string unk3;
-	}
-
-	struct MethodParam71 {
-		uint64 unk1;
-		uint8 unk2;
-		uint32 unk3;
 	}
 
 	method(8) get_meta(DataStoreGetMetaParam param) {

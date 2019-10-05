@@ -39,7 +39,8 @@ SMM_GAME_SERVER_ID = 0x1018DB00
 api.set_title(SMM_TITLE_ID, SMM_VERSION)
 nex_token_smm = api.get_nex_token(SMM_GAME_SERVER_ID)
 
-backendclient = backend.BackEndClient(SMM.ACCESS_KEY, SMM.NEX_VERSION)
+backendclient = backend.BackEndClient()
+backendclient.configure(SMM.ACCESS_KEY, SMM.NEX_VERSION)
 backendclient.connect(nex_token_smm.host, nex_token_smm.port)
 
 auth_info = authentication.AuthenticationInfo()
