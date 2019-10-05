@@ -302,93 +302,115 @@ protocol DataStoreSmm : 115 {
 		list<DataStoreFileServerObjectInfo> infos;
 	}
 
-	method(48) method48(list<UnknownStruct6> param) { }
+	method(48) rate_custom_ranking(list<UnknownStruct6> param) { }
 
 	method(49) method49(MethodParam49 param) {
 		list<DataStoreInfoStuff> infos;
 		list<result> results;
 	}
 
-	method(50) method50(MethodParam50 param) {
+	method(50) get_custom_ranking_by_data_id(MethodParam50 param) {
 		list<DataStoreInfoStuff> infos;
 		list<result> results;
 	}
 
-	method(53) method53(list<UnknownStruct4> unknown1, list<qbuffer> unknown2) {
+	method(52) add_to_buffer_queue;
+
+	method(53) add_to_buffer_queues(list<UnknownStruct4> unknown1, list<qbuffer> unknown2) {
 		list<result> results;
 	}
 
-	method(54) method54(UnknownStruct4 param) {
+	method(54) get_buffer_queue(UnknownStruct4 param) {
 		list<qbuffer> results;
 	}
 
-	method(57) method57(DataStoreCompletePostParam param) {
+	method(55) get_buffer_queues;
+
+	method(56) clear_buffer_queues;
+
+	method(57) complete_attach_file(DataStoreCompletePostParam param) {
 		string unknown;
 	}
 
-	method(59) method59(MethodParam59 param) {
+	method(58) complete_attach_file_v1;
+
+	method(59) prepare_attach_file(MethodParam59 param) {
 		DataStoreReqPostInfo infos;
 	}
 
-	method(60) method60(uint32 unknown1, UnknownStruct7 unknown2, list<string> unknown3) {
+	method(60) conditional_search_object(uint32 unknown1, UnknownStruct7 unknown2, list<string> unknown3) {
 		list<DataStoreInfoStuff> info;
 	}
 
-	method(61) method61(uint32 param) {
+	method(61) get_application_config(uint32 param) {
 		list<uint32> unknown;
 	}
 
-	method(64) method64(UnknownStruct7 unknown1, list<string> unknown2) {
+	method(62) set_application_config;
+
+	method(63) delete_application_config;
+
+	method(64) latest_course_search_object(UnknownStruct7 unknown1, list<string> unknown2) {
 		list<DataStoreInfoStuff> infos;
 	}
 
-	method(65) method65(UnknownStruct7 unknown1, list<string> unknown2) {
+	method(65) followings_latest_course_search_object(UnknownStruct7 unknown1, list<string> unknown2) {
 		list<DataStoreInfoStuff> infos;
 	}
 
-	method(66) method66(UnknownStruct7 unknown1, list<string> unknown2) {
+	method(66) recommended_course_search_object(UnknownStruct7 unknown1, list<string> unknown2) {
 		list<DataStoreInfoStuff> infos;
 	}
 
-	method(67) method67(UnknownStruct7 unknown1, list<string> unknown2) {
+	method(67) score_range_cascaded_search_object(UnknownStruct7 unknown1, list<string> unknown2) {
 		list<DataStoreInfoStuff> infos;
 	}
 
-	method(68) method68(UnknownStruct7 unknown1, list<string> unknown2) {
+	method(68) suggested_course_search_object(UnknownStruct7 unknown1, list<string> unknown2) {
 		list<DataStoreInfoStuff> infos;
 	}
 
-	method(71) method71(MethodParam71 param) { }
+	method(71) upload_course_record(MethodParam71 param) { }
 
-	method(72) method72(UnknownStruct2 param) {
+	method(72) get_course_record(UnknownStruct2 param) {
 		CourseRecordInfo unknown;
 	}
+
+	method(73) delete_course_record;
 	
-	method(74) method74(uint32 param) {
+	method(74) get_application_config_string(uint32 param) {
 		list<string> unknown;
 	}
 
-	method(76) method76(list<uint64> unknown) {
+	method(75) set_application_config_string;
+
+	method(76) get_deletion_reason(list<uint64> unknown) {
 		list<uint32> unknown;
 	}
 
-	method(78) method78(list<UnknownStruct2> unknown, DataStoreGetMetaParam get_meta_param) {
+	method(77) set_deletion_reason;
+
+	method(78) get_metas_with_course_record(list<UnknownStruct2> unknown, DataStoreGetMetaParam get_meta_param) {
 		list<DataStoreMetaInfo> infos;
 		list<CourseRecordInfo> unknown;
 		list<result> results;
 	}
 	
-	method(79) method79(uint32 unk1) {
+	method(79) check_rate_custom_ranking_counter(uint32 unk1) {
 		bool result;
 	}
 
-	method(81) method81(UnknownStruct7 unknown1, list<string> unknown2) {
+	method(80) reset_rate_custom_ranking_counter;
+
+	method(81) best_score_rate_course_search_object(UnknownStruct7 unknown1, list<string> unknown2) {
 		list<DataStoreInfoStuff> infos;
 	}
 
-	method(82) method82(UnknownStruct7 unknown1, list<string> unknown2) {
+	method(82) ctr_pick_up_course_search_object(UnknownStruct7 unknown1, list<string> unknown2) {
 		list<DataStoreInfoStuff> infos;
 	}
 
-	method(87) method87(MethodParam87 param) { }
+	method(86) search_unknown_platform_objects;
+
+	method(87) report_course(MethodParam87 param) { }
 }

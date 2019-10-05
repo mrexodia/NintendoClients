@@ -202,11 +202,11 @@ class DataStoreSmmServer(datastoresmm.DataStoreSmmServer):
         info.root_ca_cert = b""
         return info
 
-    def method59(self, context, param):
+    def prepare_attach_file(self, context, param):
         print("param: %s" % json.dumps(jsons.dump(param)))
         return self.prepare_post_object(context, param.unk1)
 
-    def method57(self, context, param):
+    def complete_attach_file(self, context, param):
         print("param: %s" % json.dumps(jsons.dump(param)))
         return "kurwa"
 
@@ -276,10 +276,10 @@ class DataStoreSmmServer(datastoresmm.DataStoreSmmServer):
             res.results.append(common.Result(0x690001))
         return res
 
-    def method48(self, context, param):
+    def rate_custom_ranking(self, context, param):
         print("param: %s" % json.dumps(jsons.dump(param)))
 
-    def method50(self, context, param):
+    def get_custom_ranking_by_data_id(self, context, param):
         """
         Appears to get Mii data, but with SMM ratings(?) and tags
         It also gets course metadata?
@@ -334,7 +334,7 @@ class DataStoreSmmServer(datastoresmm.DataStoreSmmServer):
                 mii_data: datastoresmm.DataStoreInfoStuff
                 mii_data = self.data_provider.get_mii_data_id(data_id)
                 if not mii_data:
-                    print("method50(mii) unknown data_id: {}".format(data_id))
+                    print("get_custom_ranking_by_data_id(mii) unknown data_id: {}".format(data_id))
                     raise common.RMCError("DataStore::NotFound")
                 res.infos.append(mii_data)
                 res.results.append(common.Result(0x690001))
@@ -343,7 +343,7 @@ class DataStoreSmmServer(datastoresmm.DataStoreSmmServer):
                 course_data: datastoresmm.DataStoreInfoStuff
                 course_data = self.data_provider.get_course_data(data_id)
                 if not course_data:
-                    print("method50(course) unknown data_id: {}".format(data_id))
+                    print("get_custom_ranking_by_data_id(course) unknown data_id: {}".format(data_id))
                     raise common.RMCError("DataStore::NotFound")
                 res.infos.append(course_data)
                 res.results.append(common.Result(0x690001))
@@ -355,7 +355,7 @@ class DataStoreSmmServer(datastoresmm.DataStoreSmmServer):
         return res
 
     # called when a course is completed
-    def method53(self, context, unknown1, unknown2):
+    def add_to_buffer_queues(self, context, unknown1, unknown2):
         """
         if you die in a course your last death will be in unknown2[2]
         the first two parameters are unclear
@@ -369,24 +369,24 @@ class DataStoreSmmServer(datastoresmm.DataStoreSmmServer):
     # called if you click 'Course World'
     # also called before you start a course
     # it looks like coordinates of where people died (those red crosses)
-    # this information appears to be provided by method53 (in the third parameter of unknown2?)
-    def method54(self, context, param):
+    # this information appears to be provided by add_to_buffer_queues (in the third parameter of unknown2?)
+    def get_buffer_queue(self, context, param):
         print("param: %s" % json.dumps(jsons.dump(param)))
         if param.unk2 == 0:  # potentially data ids?
             res = []
         elif param.unk2 == 3:  # some sort of checksum for the course data (likely tied to the metadata)
             res = self.data_provider.get_unkdata(param.data_id)
             if res is None:
-                print("method54, fake unknown data (empty)")
+                print("get_buffer_queue, fake unknown data (empty)")
                 res = []
         else:
-            logger.warning("DataStoreSmmServer.method54 not implemented (data_id: {})".format(param.data_id))
+            logger.warning("DataStoreSmmServer.get_buffer_queue not implemented (data_id: {})".format(param.data_id))
             raise common.RMCError("DataStore::NotFound")
         print("res: %s" % json.dumps(jsons.dump(res)))
         return res
 
-    def method61(self, context, param):
-        print("method61({})".format(param))
+    def get_application_config(self, context, param):
+        print("get_application_config({})".format(param))
         if param == 0:
             res = [0x1, 0x32, 0x96, 0x12C, 0x1F4, 0x320, 0x514, 0x7D0, 0xBB8, 0x1388, 0xA, 0x14, 0x1E, 0x28, 0x32, 0x3C, 0x46, 0x50, 0x5A, 0x64, 0x23, 0x4B, 0x23, 0x4B, 0x32, 0x0, 0x3, 0x3, 0x64, 0x6, 0x1, 0x60, 0x5, 0x60, 0x0, 0x7E4, 0x1, 0x1, 0xC, 0x0]
         elif param == 1:
@@ -398,7 +398,7 @@ class DataStoreSmmServer(datastoresmm.DataStoreSmmServer):
         print("res: {}".format(repr(res)))
         return res
 
-    def method66(self, context, unknown1, unknown2):
+    def recommended_course_search_object(self, context, unknown1, unknown2):
         """
         Function related to 100 Mario Challenge
         Observed values:
@@ -425,34 +425,34 @@ class DataStoreSmmServer(datastoresmm.DataStoreSmmServer):
             import random
             return random.sample(list(self.data_provider.course_data.values()), 50)
         else:
-            print("method66 with unexpected unknown2 parameter")
+            print("recommended_course_search_object with unexpected unknown2 parameter")
             raise common.RMCError("DataStore::InvalidArgument")
 
-    def method65(self, context, unknown1, unknown2):
+    def followings_latest_course_search_object(self, context, unknown1, unknown2):
         print("unknown1: {}\nunknown2: {}".format(json.dumps(jsons.dump(unknown1)), json.dumps(jsons.dump(unknown2))))
         if unknown2 == ["0", "3", "10", "4", "11", "5", "12", "6", "13", "7", "14", "8", "15"]:
             if unknown1.pids == [1337]:
                 res = []
                 return res
             else:
-                print("method65 with unknown pids {}".format(unknown1.pids))
+                print("followings_latest_course_search_object with unknown pids {}".format(unknown1.pids))
                 raise common.RMCError("DataStore::NotFound")
         else:
-            print("method65 with unexpected unknown2 parameter")
+            print("followings_latest_course_search_object with unexpected unknown2 parameter")
             raise common.RMCError("DataStore::InvalidArgument")
 
-    def method71(self, context, param):
+    def upload_course_record(self, context, param):
         print("param: {}".format(json.dumps(jsons.dump(param))))
 
-    def method72(self, context, param):
+    def get_course_record(self, context, param):
         """
         Method that fetched the current record
         """
-        print("method72({})".format(json.dumps(jsons.dump(param))))
+        print("get_course_record({})".format(json.dumps(jsons.dump(param))))
         if param.unk2 == 0:
             ranking = self.data_provider.get_ranking(param.data_id)
             if not ranking:
-                print("method72, fake ranking")
+                print("get_course_record, fake ranking")
                 res = datastoresmm.CourseRecordInfo()
                 res.data_id = param.data_id
                 res.unk2 = 0
@@ -465,10 +465,10 @@ class DataStoreSmmServer(datastoresmm.DataStoreSmmServer):
             else:
                 return ranking
         else:
-            print("method72 with unexpected unk2")
+            print("get_course_record with unexpected unk2")
             raise common.RMCError("DataStore::InvalidArgument")
 
-    def method74(self, context, param):
+    def get_application_config_string(self, context, param):
         """
         Probably a function related to a word blacklist.
         """
@@ -480,11 +480,11 @@ class DataStoreSmmServer(datastoresmm.DataStoreSmmServer):
         elif param == 130:
             res = [u"いいね", u"下さい", u"ください", u"押して", u"おして", u"返す", u"かえす", u"星", u"してくれ", u"するよ", u"☆くれたら", u"☆あげます", u"★くれたら", u"★あげます", u"しね", u"ころす", u"ころされた", u"アナル", u"ファック", u"キンタマ", u"○ね", u"キチガイ", u"うんこ", u"KITIGAI", u"金玉", u"おっぱい", u"☆おす", u"☆押す", u"★おす", u"★押す", u"いいする", u"いいよ", u"イイネ", u"ケツ", u"うんち", u"かくせいざい", u"覚せい剤", u"シャブ", u"きんたま", u"ちんちん", u"おしっこ", u"ちんぽこ", u"ころして", u"グッド", u"グット", u"レ●プ", u"バーカ", u"きちがい", u"ちんげ", u"マンコ", u"まんこ", u"チンポ", u"クズ", u"ウンコ", u"ナイスおねがいします", u"penis", u"イイね", u"☆よろ"]
         else:
-            print("method74 with unknown parameter")
+            print("get_application_config_string with unknown parameter")
             raise common.RMCError("DataStore::InvalidArgument")
         return res
 
-    def method78(self, context, unknown, get_meta_param):
+    def get_metas_with_course_record(self, context, unknown, get_meta_param):
         print("unknown: {}".format(json.dumps(jsons.dump(unknown))))
         print("get_meta_param: {}".format(json.dumps(jsons.dump(get_meta_param))))
         res = common.RMCResponse()
@@ -499,8 +499,8 @@ class DataStoreSmmServer(datastoresmm.DataStoreSmmServer):
         print("res: %s" % json.dumps(jsons.dump(res)))
         return res
 
-    def method79(self, context, unk1):
-        logging.info("dummy method79({})".format(unk1))
+    def check_rate_custom_ranking_counter(self, context, unk1):
+        logging.info("dummy check_rate_custom_ranking_counter({})".format(unk1))
         return True
 
 

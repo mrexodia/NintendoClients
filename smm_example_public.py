@@ -339,7 +339,7 @@ while i < len(courseids):
     courseparam.data_ids = []
     for j in range(0, min(len(courseids) - i, 50)):
         courseparam.data_ids.append(courseids[i + j])
-    courseresponse = client.method50(courseparam)
+    courseresponse = client.get_custom_ranking_by_data_id(courseparam)
     coursedatas, courseresults = courseresponse.infos, courseresponse.results
     save_stream("coursedatas{}.bin".format(i), lambda s: s.list(coursedatas, s.add))
 
@@ -360,7 +360,7 @@ while i < len(courseids):
     for miidata in miidatas:
         smm_miiparam.data_ids.append(miidata.data_id)
 
-    smm_miiresponse = client.method50(smm_miiparam)
+    smm_miiresponse = client.get_custom_ranking_by_data_id(smm_miiparam)
     smm_miidatas, smm_miiresults = smm_miiresponse.infos, smm_miiresponse.results
     save_stream("smm_miidatas{}.bin".format(i), lambda s: s.list(smm_miidatas, s.add))
 
@@ -381,7 +381,7 @@ while i < len(courseids):
         rankingparam.data_id = coursedata.info.data_id
         rankingparam.unk2 = 0
         rankingdata: datastoresmm.CourseRecordInfo
-        rankingdata = client.method72(rankingparam)
+        rankingdata = client.get_course_record(rankingparam)
         save_stream("ranking{}.bin".format(coursedata.info.data_id), lambda s: s.add(rankingdata))
 
         best_miiparams = [make_metaparam(rankingdata.world_record_pid), make_metaparam(rankingdata.first_clear_pid)]
@@ -397,14 +397,14 @@ while i < len(courseids):
         for miidata in best_miis:
             smm_miiparam.data_ids.append(miidata.data_id)
 
-        best_smm_miiresponse = client.method50(smm_miiparam)
+        best_smm_miiresponse = client.get_custom_ranking_by_data_id(smm_miiparam)
         best_smm_miidatas, best_smm_miiresults = best_smm_miiresponse.infos, best_smm_miiresponse.results
         save_stream("best_smm_miidatas{}.bin".format(coursedata.info.data_id), lambda s: s.list(best_smm_miidatas, s.add))
 
         unkparam = datastoresmm.UnknownStruct4()
         unkparam.unk1 = coursedata.info.data_id
         unkparam.unk2 = 3
-        unkdatas = client.method54(unkparam)
+        unkdatas = client.get_buffer_queue(unkparam)
         save_stream("unkdatas{}.bin".format(coursedata.info.data_id), lambda s: s.list(unkdatas, s.qbuffer))
 
     i += 50

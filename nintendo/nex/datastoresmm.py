@@ -846,6 +846,42 @@ class UnknownStruct2(common.Structure):
 		stream.u8(self.unk2)
 
 
+class UnknownStruct3(common.Structure):
+	def __init__(self):
+		super().__init__()
+		self.unk1 = None
+		self.unk2 = None
+		self.unk3 = None
+		self.unk4 = None
+		self.unk5 = None
+		self.unk6 = None
+		self.unk7 = None
+	
+	def check_required(self, settings):
+		for field in ['unk1', 'unk2', 'unk3', 'unk4', 'unk5', 'unk6', 'unk7']:
+			if getattr(self, field) is None:
+				raise ValueError("No value assigned to required field: %s" %field)
+	
+	def load(self, stream):
+		self.unk1 = stream.u64()
+		self.unk2 = stream.u8()
+		self.unk3 = stream.u32()
+		self.unk4 = stream.u32()
+		self.unk5 = stream.u32()
+		self.unk6 = stream.datetime()
+		self.unk7 = stream.datetime()
+	
+	def save(self, stream):
+		self.check_required(stream.settings)
+		stream.u64(self.unk1)
+		stream.u8(self.unk2)
+		stream.u32(self.unk3)
+		stream.u32(self.unk4)
+		stream.u32(self.unk5)
+		stream.datetime(self.unk6)
+		stream.datetime(self.unk7)
+
+
 class UnknownStruct4(common.Structure):
 	def __init__(self):
 		super().__init__()
@@ -998,29 +1034,40 @@ class DataStoreSmmProtocol:
 	METHOD_CHANGE_META = 38
 	METHOD_RATE_OBJECTS = 40
 	METHOD_GET_FILE_SERVER_OBJECT_INFOS = 45
-	METHOD_METHOD48 = 48
+	METHOD_RATE_CUSTOM_RANKING = 48
 	METHOD_METHOD49 = 49
-	METHOD_METHOD50 = 50
-	METHOD_METHOD53 = 53
-	METHOD_METHOD54 = 54
-	METHOD_METHOD57 = 57
-	METHOD_METHOD59 = 59
-	METHOD_METHOD60 = 60
-	METHOD_METHOD61 = 61
-	METHOD_METHOD64 = 64
-	METHOD_METHOD65 = 65
-	METHOD_METHOD66 = 66
-	METHOD_METHOD67 = 67
-	METHOD_METHOD68 = 68
-	METHOD_METHOD71 = 71
-	METHOD_METHOD72 = 72
-	METHOD_METHOD74 = 74
-	METHOD_METHOD76 = 76
-	METHOD_METHOD78 = 78
-	METHOD_METHOD79 = 79
-	METHOD_METHOD81 = 81
-	METHOD_METHOD82 = 82
-	METHOD_METHOD87 = 87
+	METHOD_GET_CUSTOM_RANKING_BY_DATA_ID = 50
+	METHOD_ADD_TO_BUFFER_QUEUE = 52
+	METHOD_ADD_TO_BUFFER_QUEUES = 53
+	METHOD_GET_BUFFER_QUEUE = 54
+	METHOD_GET_BUFFER_QUEUES = 55
+	METHOD_CLEAR_BUFFER_QUEUES = 56
+	METHOD_COMPLETE_ATTACH_FILE = 57
+	METHOD_COMPLETE_ATTACH_FILE_V1 = 58
+	METHOD_PREPARE_ATTACH_FILE = 59
+	METHOD_CONDITIONAL_SEARCH_OBJECT = 60
+	METHOD_GET_APPLICATION_CONFIG = 61
+	METHOD_SET_APPLICATION_CONFIG = 62
+	METHOD_DELETE_APPLICATION_CONFIG = 63
+	METHOD_LATEST_COURSE_SEARCH_OBJECT = 64
+	METHOD_FOLLOWINGS_LATEST_COURSE_SEARCH_OBJECT = 65
+	METHOD_RECOMMENDED_COURSE_SEARCH_OBJECT = 66
+	METHOD_SCORE_RANGE_CASCADED_SEARCH_OBJECT = 67
+	METHOD_SUGGESTED_COURSE_SEARCH_OBJECT = 68
+	METHOD_UPLOAD_COURSE_RECORD = 71
+	METHOD_GET_COURSE_RECORD = 72
+	METHOD_DELETE_COURSE_RECORD = 73
+	METHOD_GET_APPLICATION_CONFIG_STRING = 74
+	METHOD_SET_APPLICATION_CONFIG_STRING = 75
+	METHOD_GET_DELETION_REASON = 76
+	METHOD_SET_DELETION_REASON = 77
+	METHOD_GET_METAS_WITH_COURSE_RECORD = 78
+	METHOD_CHECK_RATE_CUSTOM_RANKING_COUNTER = 79
+	METHOD_RESET_RATE_CUSTOM_RANKING_COUNTER = 80
+	METHOD_BEST_SCORE_RATE_COURSE_SEARCH_OBJECT = 81
+	METHOD_CTR_PICK_UP_COURSE_SEARCH_OBJECT = 82
+	METHOD_SEARCH_UNKNOWN_PLATFORM_OBJECTS = 86
+	METHOD_REPORT_COURSE = 87
 	
 	PROTOCOL_ID = 0x73
 
@@ -1136,16 +1183,16 @@ class DataStoreSmmClient(DataStoreSmmProtocol):
 		logger.info("DataStoreSmmClient.get_file_server_object_infos -> done")
 		return infos
 	
-	def method48(self, param):
-		logger.info("DataStoreSmmClient.method48()")
+	def rate_custom_ranking(self, param):
+		logger.info("DataStoreSmmClient.rate_custom_ranking()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD48)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_RATE_CUSTOM_RANKING)
 		stream.list(param, stream.add)
 		self.client.send_message(stream)
 		
 		#--- response ---
 		self.client.get_response(call_id)
-		logger.info("DataStoreSmmClient.method48 -> done")
+		logger.info("DataStoreSmmClient.rate_custom_ranking -> done")
 	
 	def method49(self, param):
 		logger.info("DataStoreSmmClient.method49()")
@@ -1162,10 +1209,10 @@ class DataStoreSmmClient(DataStoreSmmProtocol):
 		logger.info("DataStoreSmmClient.method49 -> done")
 		return obj
 	
-	def method50(self, param):
-		logger.info("DataStoreSmmClient.method50()")
+	def get_custom_ranking_by_data_id(self, param):
+		logger.info("DataStoreSmmClient.get_custom_ranking_by_data_id()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD50)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_GET_CUSTOM_RANKING_BY_DATA_ID)
 		stream.add(param)
 		self.client.send_message(stream)
 		
@@ -1174,13 +1221,13 @@ class DataStoreSmmClient(DataStoreSmmProtocol):
 		obj = common.RMCResponse()
 		obj.infos = stream.list(DataStoreInfoStuff)
 		obj.results = stream.list(stream.result)
-		logger.info("DataStoreSmmClient.method50 -> done")
+		logger.info("DataStoreSmmClient.get_custom_ranking_by_data_id -> done")
 		return obj
 	
-	def method53(self, unknown1, unknown2):
-		logger.info("DataStoreSmmClient.method53()")
+	def add_to_buffer_queues(self, unknown1, unknown2):
+		logger.info("DataStoreSmmClient.add_to_buffer_queues()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD53)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_ADD_TO_BUFFER_QUEUES)
 		stream.list(unknown1, stream.add)
 		stream.list(unknown2, stream.qbuffer)
 		self.client.send_message(stream)
@@ -1188,52 +1235,52 @@ class DataStoreSmmClient(DataStoreSmmProtocol):
 		#--- response ---
 		stream = self.client.get_response(call_id)
 		results = stream.list(stream.result)
-		logger.info("DataStoreSmmClient.method53 -> done")
+		logger.info("DataStoreSmmClient.add_to_buffer_queues -> done")
 		return results
 	
-	def method54(self, param):
-		logger.info("DataStoreSmmClient.method54()")
+	def get_buffer_queue(self, param):
+		logger.info("DataStoreSmmClient.get_buffer_queue()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD54)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_GET_BUFFER_QUEUE)
 		stream.add(param)
 		self.client.send_message(stream)
 		
 		#--- response ---
 		stream = self.client.get_response(call_id)
 		results = stream.list(stream.qbuffer)
-		logger.info("DataStoreSmmClient.method54 -> done")
+		logger.info("DataStoreSmmClient.get_buffer_queue -> done")
 		return results
 	
-	def method57(self, param):
-		logger.info("DataStoreSmmClient.method57()")
+	def complete_attach_file(self, param):
+		logger.info("DataStoreSmmClient.complete_attach_file()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD57)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_COMPLETE_ATTACH_FILE)
 		stream.add(param)
 		self.client.send_message(stream)
 		
 		#--- response ---
 		stream = self.client.get_response(call_id)
 		unknown = stream.string()
-		logger.info("DataStoreSmmClient.method57 -> done")
+		logger.info("DataStoreSmmClient.complete_attach_file -> done")
 		return unknown
 	
-	def method59(self, param):
-		logger.info("DataStoreSmmClient.method59()")
+	def prepare_attach_file(self, param):
+		logger.info("DataStoreSmmClient.prepare_attach_file()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD59)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_PREPARE_ATTACH_FILE)
 		stream.add(param)
 		self.client.send_message(stream)
 		
 		#--- response ---
 		stream = self.client.get_response(call_id)
 		infos = stream.extract(DataStoreReqPostInfo)
-		logger.info("DataStoreSmmClient.method59 -> done")
+		logger.info("DataStoreSmmClient.prepare_attach_file -> done")
 		return infos
 	
-	def method60(self, unknown1, unknown2, unknown3):
-		logger.info("DataStoreSmmClient.method60()")
+	def conditional_search_object(self, unknown1, unknown2, unknown3):
+		logger.info("DataStoreSmmClient.conditional_search_object()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD60)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_CONDITIONAL_SEARCH_OBJECT)
 		stream.u32(unknown1)
 		stream.add(unknown2)
 		stream.list(unknown3, stream.string)
@@ -1242,26 +1289,26 @@ class DataStoreSmmClient(DataStoreSmmProtocol):
 		#--- response ---
 		stream = self.client.get_response(call_id)
 		info = stream.list(DataStoreInfoStuff)
-		logger.info("DataStoreSmmClient.method60 -> done")
+		logger.info("DataStoreSmmClient.conditional_search_object -> done")
 		return info
 	
-	def method61(self, param):
-		logger.info("DataStoreSmmClient.method61()")
+	def get_application_config(self, param):
+		logger.info("DataStoreSmmClient.get_application_config()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD61)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_GET_APPLICATION_CONFIG)
 		stream.u32(param)
 		self.client.send_message(stream)
 		
 		#--- response ---
 		stream = self.client.get_response(call_id)
 		unknown = stream.list(stream.u32)
-		logger.info("DataStoreSmmClient.method61 -> done")
+		logger.info("DataStoreSmmClient.get_application_config -> done")
 		return unknown
 	
-	def method64(self, unknown1, unknown2):
-		logger.info("DataStoreSmmClient.method64()")
+	def latest_course_search_object(self, unknown1, unknown2):
+		logger.info("DataStoreSmmClient.latest_course_search_object()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD64)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_LATEST_COURSE_SEARCH_OBJECT)
 		stream.add(unknown1)
 		stream.list(unknown2, stream.string)
 		self.client.send_message(stream)
@@ -1269,13 +1316,13 @@ class DataStoreSmmClient(DataStoreSmmProtocol):
 		#--- response ---
 		stream = self.client.get_response(call_id)
 		infos = stream.list(DataStoreInfoStuff)
-		logger.info("DataStoreSmmClient.method64 -> done")
+		logger.info("DataStoreSmmClient.latest_course_search_object -> done")
 		return infos
 	
-	def method65(self, unknown1, unknown2):
-		logger.info("DataStoreSmmClient.method65()")
+	def followings_latest_course_search_object(self, unknown1, unknown2):
+		logger.info("DataStoreSmmClient.followings_latest_course_search_object()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD65)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_FOLLOWINGS_LATEST_COURSE_SEARCH_OBJECT)
 		stream.add(unknown1)
 		stream.list(unknown2, stream.string)
 		self.client.send_message(stream)
@@ -1283,13 +1330,13 @@ class DataStoreSmmClient(DataStoreSmmProtocol):
 		#--- response ---
 		stream = self.client.get_response(call_id)
 		infos = stream.list(DataStoreInfoStuff)
-		logger.info("DataStoreSmmClient.method65 -> done")
+		logger.info("DataStoreSmmClient.followings_latest_course_search_object -> done")
 		return infos
 	
-	def method66(self, unknown1, unknown2):
-		logger.info("DataStoreSmmClient.method66()")
+	def recommended_course_search_object(self, unknown1, unknown2):
+		logger.info("DataStoreSmmClient.recommended_course_search_object()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD66)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_RECOMMENDED_COURSE_SEARCH_OBJECT)
 		stream.add(unknown1)
 		stream.list(unknown2, stream.string)
 		self.client.send_message(stream)
@@ -1297,13 +1344,13 @@ class DataStoreSmmClient(DataStoreSmmProtocol):
 		#--- response ---
 		stream = self.client.get_response(call_id)
 		infos = stream.list(DataStoreInfoStuff)
-		logger.info("DataStoreSmmClient.method66 -> done")
+		logger.info("DataStoreSmmClient.recommended_course_search_object -> done")
 		return infos
 	
-	def method67(self, unknown1, unknown2):
-		logger.info("DataStoreSmmClient.method67()")
+	def score_range_cascaded_search_object(self, unknown1, unknown2):
+		logger.info("DataStoreSmmClient.score_range_cascaded_search_object()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD67)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_SCORE_RANGE_CASCADED_SEARCH_OBJECT)
 		stream.add(unknown1)
 		stream.list(unknown2, stream.string)
 		self.client.send_message(stream)
@@ -1311,13 +1358,13 @@ class DataStoreSmmClient(DataStoreSmmProtocol):
 		#--- response ---
 		stream = self.client.get_response(call_id)
 		infos = stream.list(DataStoreInfoStuff)
-		logger.info("DataStoreSmmClient.method67 -> done")
+		logger.info("DataStoreSmmClient.score_range_cascaded_search_object -> done")
 		return infos
 	
-	def method68(self, unknown1, unknown2):
-		logger.info("DataStoreSmmClient.method68()")
+	def suggested_course_search_object(self, unknown1, unknown2):
+		logger.info("DataStoreSmmClient.suggested_course_search_object()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD68)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_SUGGESTED_COURSE_SEARCH_OBJECT)
 		stream.add(unknown1)
 		stream.list(unknown2, stream.string)
 		self.client.send_message(stream)
@@ -1325,63 +1372,63 @@ class DataStoreSmmClient(DataStoreSmmProtocol):
 		#--- response ---
 		stream = self.client.get_response(call_id)
 		infos = stream.list(DataStoreInfoStuff)
-		logger.info("DataStoreSmmClient.method68 -> done")
+		logger.info("DataStoreSmmClient.suggested_course_search_object -> done")
 		return infos
 	
-	def method71(self, param):
-		logger.info("DataStoreSmmClient.method71()")
+	def upload_course_record(self, param):
+		logger.info("DataStoreSmmClient.upload_course_record()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD71)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_UPLOAD_COURSE_RECORD)
 		stream.add(param)
 		self.client.send_message(stream)
 		
 		#--- response ---
 		self.client.get_response(call_id)
-		logger.info("DataStoreSmmClient.method71 -> done")
+		logger.info("DataStoreSmmClient.upload_course_record -> done")
 	
-	def method72(self, param):
-		logger.info("DataStoreSmmClient.method72()")
+	def get_course_record(self, param):
+		logger.info("DataStoreSmmClient.get_course_record()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD72)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_GET_COURSE_RECORD)
 		stream.add(param)
 		self.client.send_message(stream)
 		
 		#--- response ---
 		stream = self.client.get_response(call_id)
 		unknown = stream.extract(CourseRecordInfo)
-		logger.info("DataStoreSmmClient.method72 -> done")
+		logger.info("DataStoreSmmClient.get_course_record -> done")
 		return unknown
 	
-	def method74(self, param):
-		logger.info("DataStoreSmmClient.method74()")
+	def get_application_config_string(self, param):
+		logger.info("DataStoreSmmClient.get_application_config_string()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD74)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_GET_APPLICATION_CONFIG_STRING)
 		stream.u32(param)
 		self.client.send_message(stream)
 		
 		#--- response ---
 		stream = self.client.get_response(call_id)
 		unknown = stream.list(stream.string)
-		logger.info("DataStoreSmmClient.method74 -> done")
+		logger.info("DataStoreSmmClient.get_application_config_string -> done")
 		return unknown
 	
-	def method76(self, unknown):
-		logger.info("DataStoreSmmClient.method76()")
+	def get_deletion_reason(self, unknown):
+		logger.info("DataStoreSmmClient.get_deletion_reason()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD76)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_GET_DELETION_REASON)
 		stream.list(unknown, stream.u64)
 		self.client.send_message(stream)
 		
 		#--- response ---
 		stream = self.client.get_response(call_id)
 		unknown = stream.list(stream.u32)
-		logger.info("DataStoreSmmClient.method76 -> done")
+		logger.info("DataStoreSmmClient.get_deletion_reason -> done")
 		return unknown
 	
-	def method78(self, unknown, get_meta_param):
-		logger.info("DataStoreSmmClient.method78()")
+	def get_metas_with_course_record(self, unknown, get_meta_param):
+		logger.info("DataStoreSmmClient.get_metas_with_course_record()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD78)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_GET_METAS_WITH_COURSE_RECORD)
 		stream.list(unknown, stream.add)
 		stream.add(get_meta_param)
 		self.client.send_message(stream)
@@ -1392,26 +1439,26 @@ class DataStoreSmmClient(DataStoreSmmProtocol):
 		obj.infos = stream.list(DataStoreMetaInfo)
 		obj.unknown = stream.list(CourseRecordInfo)
 		obj.results = stream.list(stream.result)
-		logger.info("DataStoreSmmClient.method78 -> done")
+		logger.info("DataStoreSmmClient.get_metas_with_course_record -> done")
 		return obj
 	
-	def method79(self, unk1):
-		logger.info("DataStoreSmmClient.method79()")
+	def check_rate_custom_ranking_counter(self, unk1):
+		logger.info("DataStoreSmmClient.check_rate_custom_ranking_counter()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD79)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_CHECK_RATE_CUSTOM_RANKING_COUNTER)
 		stream.u32(unk1)
 		self.client.send_message(stream)
 		
 		#--- response ---
 		stream = self.client.get_response(call_id)
 		result = stream.bool()
-		logger.info("DataStoreSmmClient.method79 -> done")
+		logger.info("DataStoreSmmClient.check_rate_custom_ranking_counter -> done")
 		return result
 	
-	def method81(self, unknown1, unknown2):
-		logger.info("DataStoreSmmClient.method81()")
+	def best_score_rate_course_search_object(self, unknown1, unknown2):
+		logger.info("DataStoreSmmClient.best_score_rate_course_search_object()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD81)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_BEST_SCORE_RATE_COURSE_SEARCH_OBJECT)
 		stream.add(unknown1)
 		stream.list(unknown2, stream.string)
 		self.client.send_message(stream)
@@ -1419,13 +1466,13 @@ class DataStoreSmmClient(DataStoreSmmProtocol):
 		#--- response ---
 		stream = self.client.get_response(call_id)
 		infos = stream.list(DataStoreInfoStuff)
-		logger.info("DataStoreSmmClient.method81 -> done")
+		logger.info("DataStoreSmmClient.best_score_rate_course_search_object -> done")
 		return infos
 	
-	def method82(self, unknown1, unknown2):
-		logger.info("DataStoreSmmClient.method82()")
+	def ctr_pick_up_course_search_object(self, unknown1, unknown2):
+		logger.info("DataStoreSmmClient.ctr_pick_up_course_search_object()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD82)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_CTR_PICK_UP_COURSE_SEARCH_OBJECT)
 		stream.add(unknown1)
 		stream.list(unknown2, stream.string)
 		self.client.send_message(stream)
@@ -1433,19 +1480,19 @@ class DataStoreSmmClient(DataStoreSmmProtocol):
 		#--- response ---
 		stream = self.client.get_response(call_id)
 		infos = stream.list(DataStoreInfoStuff)
-		logger.info("DataStoreSmmClient.method82 -> done")
+		logger.info("DataStoreSmmClient.ctr_pick_up_course_search_object -> done")
 		return infos
 	
-	def method87(self, param):
-		logger.info("DataStoreSmmClient.method87()")
+	def report_course(self, param):
+		logger.info("DataStoreSmmClient.report_course()")
 		#--- request ---
-		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_METHOD87)
+		stream, call_id = self.client.init_request(self.PROTOCOL_ID, self.METHOD_REPORT_COURSE)
 		stream.add(param)
 		self.client.send_message(stream)
 		
 		#--- response ---
 		self.client.get_response(call_id)
-		logger.info("DataStoreSmmClient.method87 -> done")
+		logger.info("DataStoreSmmClient.report_course -> done")
 
 
 class DataStoreSmmServer(DataStoreSmmProtocol):
@@ -1459,29 +1506,40 @@ class DataStoreSmmServer(DataStoreSmmProtocol):
 			self.METHOD_CHANGE_META: self.handle_change_meta,
 			self.METHOD_RATE_OBJECTS: self.handle_rate_objects,
 			self.METHOD_GET_FILE_SERVER_OBJECT_INFOS: self.handle_get_file_server_object_infos,
-			self.METHOD_METHOD48: self.handle_method48,
+			self.METHOD_RATE_CUSTOM_RANKING: self.handle_rate_custom_ranking,
 			self.METHOD_METHOD49: self.handle_method49,
-			self.METHOD_METHOD50: self.handle_method50,
-			self.METHOD_METHOD53: self.handle_method53,
-			self.METHOD_METHOD54: self.handle_method54,
-			self.METHOD_METHOD57: self.handle_method57,
-			self.METHOD_METHOD59: self.handle_method59,
-			self.METHOD_METHOD60: self.handle_method60,
-			self.METHOD_METHOD61: self.handle_method61,
-			self.METHOD_METHOD64: self.handle_method64,
-			self.METHOD_METHOD65: self.handle_method65,
-			self.METHOD_METHOD66: self.handle_method66,
-			self.METHOD_METHOD67: self.handle_method67,
-			self.METHOD_METHOD68: self.handle_method68,
-			self.METHOD_METHOD71: self.handle_method71,
-			self.METHOD_METHOD72: self.handle_method72,
-			self.METHOD_METHOD74: self.handle_method74,
-			self.METHOD_METHOD76: self.handle_method76,
-			self.METHOD_METHOD78: self.handle_method78,
-			self.METHOD_METHOD79: self.handle_method79,
-			self.METHOD_METHOD81: self.handle_method81,
-			self.METHOD_METHOD82: self.handle_method82,
-			self.METHOD_METHOD87: self.handle_method87,
+			self.METHOD_GET_CUSTOM_RANKING_BY_DATA_ID: self.handle_get_custom_ranking_by_data_id,
+			self.METHOD_ADD_TO_BUFFER_QUEUE: self.handle_add_to_buffer_queue,
+			self.METHOD_ADD_TO_BUFFER_QUEUES: self.handle_add_to_buffer_queues,
+			self.METHOD_GET_BUFFER_QUEUE: self.handle_get_buffer_queue,
+			self.METHOD_GET_BUFFER_QUEUES: self.handle_get_buffer_queues,
+			self.METHOD_CLEAR_BUFFER_QUEUES: self.handle_clear_buffer_queues,
+			self.METHOD_COMPLETE_ATTACH_FILE: self.handle_complete_attach_file,
+			self.METHOD_COMPLETE_ATTACH_FILE_V1: self.handle_complete_attach_file_v1,
+			self.METHOD_PREPARE_ATTACH_FILE: self.handle_prepare_attach_file,
+			self.METHOD_CONDITIONAL_SEARCH_OBJECT: self.handle_conditional_search_object,
+			self.METHOD_GET_APPLICATION_CONFIG: self.handle_get_application_config,
+			self.METHOD_SET_APPLICATION_CONFIG: self.handle_set_application_config,
+			self.METHOD_DELETE_APPLICATION_CONFIG: self.handle_delete_application_config,
+			self.METHOD_LATEST_COURSE_SEARCH_OBJECT: self.handle_latest_course_search_object,
+			self.METHOD_FOLLOWINGS_LATEST_COURSE_SEARCH_OBJECT: self.handle_followings_latest_course_search_object,
+			self.METHOD_RECOMMENDED_COURSE_SEARCH_OBJECT: self.handle_recommended_course_search_object,
+			self.METHOD_SCORE_RANGE_CASCADED_SEARCH_OBJECT: self.handle_score_range_cascaded_search_object,
+			self.METHOD_SUGGESTED_COURSE_SEARCH_OBJECT: self.handle_suggested_course_search_object,
+			self.METHOD_UPLOAD_COURSE_RECORD: self.handle_upload_course_record,
+			self.METHOD_GET_COURSE_RECORD: self.handle_get_course_record,
+			self.METHOD_DELETE_COURSE_RECORD: self.handle_delete_course_record,
+			self.METHOD_GET_APPLICATION_CONFIG_STRING: self.handle_get_application_config_string,
+			self.METHOD_SET_APPLICATION_CONFIG_STRING: self.handle_set_application_config_string,
+			self.METHOD_GET_DELETION_REASON: self.handle_get_deletion_reason,
+			self.METHOD_SET_DELETION_REASON: self.handle_set_deletion_reason,
+			self.METHOD_GET_METAS_WITH_COURSE_RECORD: self.handle_get_metas_with_course_record,
+			self.METHOD_CHECK_RATE_CUSTOM_RANKING_COUNTER: self.handle_check_rate_custom_ranking_counter,
+			self.METHOD_RESET_RATE_CUSTOM_RANKING_COUNTER: self.handle_reset_rate_custom_ranking_counter,
+			self.METHOD_BEST_SCORE_RATE_COURSE_SEARCH_OBJECT: self.handle_best_score_rate_course_search_object,
+			self.METHOD_CTR_PICK_UP_COURSE_SEARCH_OBJECT: self.handle_ctr_pick_up_course_search_object,
+			self.METHOD_SEARCH_UNKNOWN_PLATFORM_OBJECTS: self.handle_search_unknown_platform_objects,
+			self.METHOD_REPORT_COURSE: self.handle_report_course,
 		}
 	
 	def handle(self, context, method_id, input, output):
@@ -1580,11 +1638,11 @@ class DataStoreSmmServer(DataStoreSmmProtocol):
 			raise RuntimeError("Expected list, got %s" %response.__class__.__name__)
 		output.list(response, output.add)
 	
-	def handle_method48(self, context, input, output):
-		logger.info("DataStoreSmmServer.method48()")
+	def handle_rate_custom_ranking(self, context, input, output):
+		logger.info("DataStoreSmmServer.rate_custom_ranking()")
 		#--- request ---
 		param = input.list(UnknownStruct6)
-		self.method48(context, param)
+		self.rate_custom_ranking(context, param)
 	
 	def handle_method49(self, context, input, output):
 		logger.info("DataStoreSmmServer.method49()")
@@ -1601,11 +1659,11 @@ class DataStoreSmmServer(DataStoreSmmProtocol):
 		output.list(response.infos, output.add)
 		output.list(response.results, output.result)
 	
-	def handle_method50(self, context, input, output):
-		logger.info("DataStoreSmmServer.method50()")
+	def handle_get_custom_ranking_by_data_id(self, context, input, output):
+		logger.info("DataStoreSmmServer.get_custom_ranking_by_data_id()")
 		#--- request ---
 		param = input.extract(MethodParam50)
-		response = self.method50(context, param)
+		response = self.get_custom_ranking_by_data_id(context, param)
 		
 		#--- response ---
 		if not isinstance(response, common.RMCResponse):
@@ -1616,180 +1674,216 @@ class DataStoreSmmServer(DataStoreSmmProtocol):
 		output.list(response.infos, output.add)
 		output.list(response.results, output.result)
 	
-	def handle_method53(self, context, input, output):
-		logger.info("DataStoreSmmServer.method53()")
+	def handle_add_to_buffer_queue(self, context, input, output):
+		logger.warning("DataStoreSmmServer.add_to_buffer_queue is unsupported")
+		raise common.RMCError("Core::NotImplemented")
+	
+	def handle_add_to_buffer_queues(self, context, input, output):
+		logger.info("DataStoreSmmServer.add_to_buffer_queues()")
 		#--- request ---
 		unknown1 = input.list(UnknownStruct4)
 		unknown2 = input.list(input.qbuffer)
-		response = self.method53(context, unknown1, unknown2)
+		response = self.add_to_buffer_queues(context, unknown1, unknown2)
 		
 		#--- response ---
 		if not isinstance(response, list):
 			raise RuntimeError("Expected list, got %s" %response.__class__.__name__)
 		output.list(response, output.result)
 	
-	def handle_method54(self, context, input, output):
-		logger.info("DataStoreSmmServer.method54()")
+	def handle_get_buffer_queue(self, context, input, output):
+		logger.info("DataStoreSmmServer.get_buffer_queue()")
 		#--- request ---
 		param = input.extract(UnknownStruct4)
-		response = self.method54(context, param)
+		response = self.get_buffer_queue(context, param)
 		
 		#--- response ---
 		if not isinstance(response, list):
 			raise RuntimeError("Expected list, got %s" %response.__class__.__name__)
 		output.list(response, output.qbuffer)
 	
-	def handle_method57(self, context, input, output):
-		logger.info("DataStoreSmmServer.method57()")
+	def handle_get_buffer_queues(self, context, input, output):
+		logger.warning("DataStoreSmmServer.get_buffer_queues is unsupported")
+		raise common.RMCError("Core::NotImplemented")
+	
+	def handle_clear_buffer_queues(self, context, input, output):
+		logger.warning("DataStoreSmmServer.clear_buffer_queues is unsupported")
+		raise common.RMCError("Core::NotImplemented")
+	
+	def handle_complete_attach_file(self, context, input, output):
+		logger.info("DataStoreSmmServer.complete_attach_file()")
 		#--- request ---
 		param = input.extract(DataStoreCompletePostParam)
-		response = self.method57(context, param)
+		response = self.complete_attach_file(context, param)
 		
 		#--- response ---
 		if not isinstance(response, str):
 			raise RuntimeError("Expected str, got %s" %response.__class__.__name__)
 		output.string(response)
 	
-	def handle_method59(self, context, input, output):
-		logger.info("DataStoreSmmServer.method59()")
+	def handle_complete_attach_file_v1(self, context, input, output):
+		logger.warning("DataStoreSmmServer.complete_attach_file_v1 is unsupported")
+		raise common.RMCError("Core::NotImplemented")
+	
+	def handle_prepare_attach_file(self, context, input, output):
+		logger.info("DataStoreSmmServer.prepare_attach_file()")
 		#--- request ---
 		param = input.extract(MethodParam59)
-		response = self.method59(context, param)
+		response = self.prepare_attach_file(context, param)
 		
 		#--- response ---
 		if not isinstance(response, DataStoreReqPostInfo):
 			raise RuntimeError("Expected DataStoreReqPostInfo, got %s" %response.__class__.__name__)
 		output.add(response)
 	
-	def handle_method60(self, context, input, output):
-		logger.info("DataStoreSmmServer.method60()")
+	def handle_conditional_search_object(self, context, input, output):
+		logger.info("DataStoreSmmServer.conditional_search_object()")
 		#--- request ---
 		unknown1 = input.u32()
 		unknown2 = input.extract(UnknownStruct7)
 		unknown3 = input.list(input.string)
-		response = self.method60(context, unknown1, unknown2, unknown3)
+		response = self.conditional_search_object(context, unknown1, unknown2, unknown3)
 		
 		#--- response ---
 		if not isinstance(response, list):
 			raise RuntimeError("Expected list, got %s" %response.__class__.__name__)
 		output.list(response, output.add)
 	
-	def handle_method61(self, context, input, output):
-		logger.info("DataStoreSmmServer.method61()")
+	def handle_get_application_config(self, context, input, output):
+		logger.info("DataStoreSmmServer.get_application_config()")
 		#--- request ---
 		param = input.u32()
-		response = self.method61(context, param)
+		response = self.get_application_config(context, param)
 		
 		#--- response ---
 		if not isinstance(response, list):
 			raise RuntimeError("Expected list, got %s" %response.__class__.__name__)
 		output.list(response, output.u32)
 	
-	def handle_method64(self, context, input, output):
-		logger.info("DataStoreSmmServer.method64()")
+	def handle_set_application_config(self, context, input, output):
+		logger.warning("DataStoreSmmServer.set_application_config is unsupported")
+		raise common.RMCError("Core::NotImplemented")
+	
+	def handle_delete_application_config(self, context, input, output):
+		logger.warning("DataStoreSmmServer.delete_application_config is unsupported")
+		raise common.RMCError("Core::NotImplemented")
+	
+	def handle_latest_course_search_object(self, context, input, output):
+		logger.info("DataStoreSmmServer.latest_course_search_object()")
 		#--- request ---
 		unknown1 = input.extract(UnknownStruct7)
 		unknown2 = input.list(input.string)
-		response = self.method64(context, unknown1, unknown2)
+		response = self.latest_course_search_object(context, unknown1, unknown2)
 		
 		#--- response ---
 		if not isinstance(response, list):
 			raise RuntimeError("Expected list, got %s" %response.__class__.__name__)
 		output.list(response, output.add)
 	
-	def handle_method65(self, context, input, output):
-		logger.info("DataStoreSmmServer.method65()")
+	def handle_followings_latest_course_search_object(self, context, input, output):
+		logger.info("DataStoreSmmServer.followings_latest_course_search_object()")
 		#--- request ---
 		unknown1 = input.extract(UnknownStruct7)
 		unknown2 = input.list(input.string)
-		response = self.method65(context, unknown1, unknown2)
+		response = self.followings_latest_course_search_object(context, unknown1, unknown2)
 		
 		#--- response ---
 		if not isinstance(response, list):
 			raise RuntimeError("Expected list, got %s" %response.__class__.__name__)
 		output.list(response, output.add)
 	
-	def handle_method66(self, context, input, output):
-		logger.info("DataStoreSmmServer.method66()")
+	def handle_recommended_course_search_object(self, context, input, output):
+		logger.info("DataStoreSmmServer.recommended_course_search_object()")
 		#--- request ---
 		unknown1 = input.extract(UnknownStruct7)
 		unknown2 = input.list(input.string)
-		response = self.method66(context, unknown1, unknown2)
+		response = self.recommended_course_search_object(context, unknown1, unknown2)
 		
 		#--- response ---
 		if not isinstance(response, list):
 			raise RuntimeError("Expected list, got %s" %response.__class__.__name__)
 		output.list(response, output.add)
 	
-	def handle_method67(self, context, input, output):
-		logger.info("DataStoreSmmServer.method67()")
+	def handle_score_range_cascaded_search_object(self, context, input, output):
+		logger.info("DataStoreSmmServer.score_range_cascaded_search_object()")
 		#--- request ---
 		unknown1 = input.extract(UnknownStruct7)
 		unknown2 = input.list(input.string)
-		response = self.method67(context, unknown1, unknown2)
+		response = self.score_range_cascaded_search_object(context, unknown1, unknown2)
 		
 		#--- response ---
 		if not isinstance(response, list):
 			raise RuntimeError("Expected list, got %s" %response.__class__.__name__)
 		output.list(response, output.add)
 	
-	def handle_method68(self, context, input, output):
-		logger.info("DataStoreSmmServer.method68()")
+	def handle_suggested_course_search_object(self, context, input, output):
+		logger.info("DataStoreSmmServer.suggested_course_search_object()")
 		#--- request ---
 		unknown1 = input.extract(UnknownStruct7)
 		unknown2 = input.list(input.string)
-		response = self.method68(context, unknown1, unknown2)
+		response = self.suggested_course_search_object(context, unknown1, unknown2)
 		
 		#--- response ---
 		if not isinstance(response, list):
 			raise RuntimeError("Expected list, got %s" %response.__class__.__name__)
 		output.list(response, output.add)
 	
-	def handle_method71(self, context, input, output):
-		logger.info("DataStoreSmmServer.method71()")
+	def handle_upload_course_record(self, context, input, output):
+		logger.info("DataStoreSmmServer.upload_course_record()")
 		#--- request ---
 		param = input.extract(MethodParam71)
-		self.method71(context, param)
+		self.upload_course_record(context, param)
 	
-	def handle_method72(self, context, input, output):
-		logger.info("DataStoreSmmServer.method72()")
+	def handle_get_course_record(self, context, input, output):
+		logger.info("DataStoreSmmServer.get_course_record()")
 		#--- request ---
 		param = input.extract(UnknownStruct2)
-		response = self.method72(context, param)
+		response = self.get_course_record(context, param)
 		
 		#--- response ---
 		if not isinstance(response, CourseRecordInfo):
 			raise RuntimeError("Expected CourseRecordInfo, got %s" %response.__class__.__name__)
 		output.add(response)
 	
-	def handle_method74(self, context, input, output):
-		logger.info("DataStoreSmmServer.method74()")
+	def handle_delete_course_record(self, context, input, output):
+		logger.warning("DataStoreSmmServer.delete_course_record is unsupported")
+		raise common.RMCError("Core::NotImplemented")
+	
+	def handle_get_application_config_string(self, context, input, output):
+		logger.info("DataStoreSmmServer.get_application_config_string()")
 		#--- request ---
 		param = input.u32()
-		response = self.method74(context, param)
+		response = self.get_application_config_string(context, param)
 		
 		#--- response ---
 		if not isinstance(response, list):
 			raise RuntimeError("Expected list, got %s" %response.__class__.__name__)
 		output.list(response, output.string)
 	
-	def handle_method76(self, context, input, output):
-		logger.info("DataStoreSmmServer.method76()")
+	def handle_set_application_config_string(self, context, input, output):
+		logger.warning("DataStoreSmmServer.set_application_config_string is unsupported")
+		raise common.RMCError("Core::NotImplemented")
+	
+	def handle_get_deletion_reason(self, context, input, output):
+		logger.info("DataStoreSmmServer.get_deletion_reason()")
 		#--- request ---
 		unknown = input.list(input.u64)
-		response = self.method76(context, unknown)
+		response = self.get_deletion_reason(context, unknown)
 		
 		#--- response ---
 		if not isinstance(response, list):
 			raise RuntimeError("Expected list, got %s" %response.__class__.__name__)
 		output.list(response, output.u32)
 	
-	def handle_method78(self, context, input, output):
-		logger.info("DataStoreSmmServer.method78()")
+	def handle_set_deletion_reason(self, context, input, output):
+		logger.warning("DataStoreSmmServer.set_deletion_reason is unsupported")
+		raise common.RMCError("Core::NotImplemented")
+	
+	def handle_get_metas_with_course_record(self, context, input, output):
+		logger.info("DataStoreSmmServer.get_metas_with_course_record()")
 		#--- request ---
 		unknown = input.list(UnknownStruct2)
 		get_meta_param = input.extract(DataStoreGetMetaParam)
-		response = self.method78(context, unknown, get_meta_param)
+		response = self.get_metas_with_course_record(context, unknown, get_meta_param)
 		
 		#--- response ---
 		if not isinstance(response, common.RMCResponse):
@@ -1801,46 +1895,54 @@ class DataStoreSmmServer(DataStoreSmmProtocol):
 		output.list(response.unknown, output.add)
 		output.list(response.results, output.result)
 	
-	def handle_method79(self, context, input, output):
-		logger.info("DataStoreSmmServer.method79()")
+	def handle_check_rate_custom_ranking_counter(self, context, input, output):
+		logger.info("DataStoreSmmServer.check_rate_custom_ranking_counter()")
 		#--- request ---
 		unk1 = input.u32()
-		response = self.method79(context, unk1)
+		response = self.check_rate_custom_ranking_counter(context, unk1)
 		
 		#--- response ---
 		if not isinstance(response, bool):
 			raise RuntimeError("Expected bool, got %s" %response.__class__.__name__)
 		output.bool(response)
 	
-	def handle_method81(self, context, input, output):
-		logger.info("DataStoreSmmServer.method81()")
+	def handle_reset_rate_custom_ranking_counter(self, context, input, output):
+		logger.warning("DataStoreSmmServer.reset_rate_custom_ranking_counter is unsupported")
+		raise common.RMCError("Core::NotImplemented")
+	
+	def handle_best_score_rate_course_search_object(self, context, input, output):
+		logger.info("DataStoreSmmServer.best_score_rate_course_search_object()")
 		#--- request ---
 		unknown1 = input.extract(UnknownStruct7)
 		unknown2 = input.list(input.string)
-		response = self.method81(context, unknown1, unknown2)
+		response = self.best_score_rate_course_search_object(context, unknown1, unknown2)
 		
 		#--- response ---
 		if not isinstance(response, list):
 			raise RuntimeError("Expected list, got %s" %response.__class__.__name__)
 		output.list(response, output.add)
 	
-	def handle_method82(self, context, input, output):
-		logger.info("DataStoreSmmServer.method82()")
+	def handle_ctr_pick_up_course_search_object(self, context, input, output):
+		logger.info("DataStoreSmmServer.ctr_pick_up_course_search_object()")
 		#--- request ---
 		unknown1 = input.extract(UnknownStruct7)
 		unknown2 = input.list(input.string)
-		response = self.method82(context, unknown1, unknown2)
+		response = self.ctr_pick_up_course_search_object(context, unknown1, unknown2)
 		
 		#--- response ---
 		if not isinstance(response, list):
 			raise RuntimeError("Expected list, got %s" %response.__class__.__name__)
 		output.list(response, output.add)
 	
-	def handle_method87(self, context, input, output):
-		logger.info("DataStoreSmmServer.method87()")
+	def handle_search_unknown_platform_objects(self, context, input, output):
+		logger.warning("DataStoreSmmServer.search_unknown_platform_objects is unsupported")
+		raise common.RMCError("Core::NotImplemented")
+	
+	def handle_report_course(self, context, input, output):
+		logger.info("DataStoreSmmServer.report_course()")
 		#--- request ---
 		param = input.extract(MethodParam87)
-		self.method87(context, param)
+		self.report_course(context, param)
 	
 	def get_meta(self, *args):
 		logger.warning("DataStoreSmmServer.get_meta not implemented")
@@ -1874,95 +1976,95 @@ class DataStoreSmmServer(DataStoreSmmProtocol):
 		logger.warning("DataStoreSmmServer.get_file_server_object_infos not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method48(self, *args):
-		logger.warning("DataStoreSmmServer.method48 not implemented")
+	def rate_custom_ranking(self, *args):
+		logger.warning("DataStoreSmmServer.rate_custom_ranking not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
 	def method49(self, *args):
 		logger.warning("DataStoreSmmServer.method49 not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method50(self, *args):
-		logger.warning("DataStoreSmmServer.method50 not implemented")
+	def get_custom_ranking_by_data_id(self, *args):
+		logger.warning("DataStoreSmmServer.get_custom_ranking_by_data_id not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method53(self, *args):
-		logger.warning("DataStoreSmmServer.method53 not implemented")
+	def add_to_buffer_queues(self, *args):
+		logger.warning("DataStoreSmmServer.add_to_buffer_queues not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method54(self, *args):
-		logger.warning("DataStoreSmmServer.method54 not implemented")
+	def get_buffer_queue(self, *args):
+		logger.warning("DataStoreSmmServer.get_buffer_queue not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method57(self, *args):
-		logger.warning("DataStoreSmmServer.method57 not implemented")
+	def complete_attach_file(self, *args):
+		logger.warning("DataStoreSmmServer.complete_attach_file not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method59(self, *args):
-		logger.warning("DataStoreSmmServer.method59 not implemented")
+	def prepare_attach_file(self, *args):
+		logger.warning("DataStoreSmmServer.prepare_attach_file not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method60(self, *args):
-		logger.warning("DataStoreSmmServer.method60 not implemented")
+	def conditional_search_object(self, *args):
+		logger.warning("DataStoreSmmServer.conditional_search_object not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method61(self, *args):
-		logger.warning("DataStoreSmmServer.method61 not implemented")
+	def get_application_config(self, *args):
+		logger.warning("DataStoreSmmServer.get_application_config not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method64(self, *args):
-		logger.warning("DataStoreSmmServer.method64 not implemented")
+	def latest_course_search_object(self, *args):
+		logger.warning("DataStoreSmmServer.latest_course_search_object not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method65(self, *args):
-		logger.warning("DataStoreSmmServer.method65 not implemented")
+	def followings_latest_course_search_object(self, *args):
+		logger.warning("DataStoreSmmServer.followings_latest_course_search_object not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method66(self, *args):
-		logger.warning("DataStoreSmmServer.method66 not implemented")
+	def recommended_course_search_object(self, *args):
+		logger.warning("DataStoreSmmServer.recommended_course_search_object not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method67(self, *args):
-		logger.warning("DataStoreSmmServer.method67 not implemented")
+	def score_range_cascaded_search_object(self, *args):
+		logger.warning("DataStoreSmmServer.score_range_cascaded_search_object not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method68(self, *args):
-		logger.warning("DataStoreSmmServer.method68 not implemented")
+	def suggested_course_search_object(self, *args):
+		logger.warning("DataStoreSmmServer.suggested_course_search_object not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method71(self, *args):
-		logger.warning("DataStoreSmmServer.method71 not implemented")
+	def upload_course_record(self, *args):
+		logger.warning("DataStoreSmmServer.upload_course_record not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method72(self, *args):
-		logger.warning("DataStoreSmmServer.method72 not implemented")
+	def get_course_record(self, *args):
+		logger.warning("DataStoreSmmServer.get_course_record not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method74(self, *args):
-		logger.warning("DataStoreSmmServer.method74 not implemented")
+	def get_application_config_string(self, *args):
+		logger.warning("DataStoreSmmServer.get_application_config_string not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method76(self, *args):
-		logger.warning("DataStoreSmmServer.method76 not implemented")
+	def get_deletion_reason(self, *args):
+		logger.warning("DataStoreSmmServer.get_deletion_reason not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method78(self, *args):
-		logger.warning("DataStoreSmmServer.method78 not implemented")
+	def get_metas_with_course_record(self, *args):
+		logger.warning("DataStoreSmmServer.get_metas_with_course_record not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method79(self, *args):
-		logger.warning("DataStoreSmmServer.method79 not implemented")
+	def check_rate_custom_ranking_counter(self, *args):
+		logger.warning("DataStoreSmmServer.check_rate_custom_ranking_counter not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method81(self, *args):
-		logger.warning("DataStoreSmmServer.method81 not implemented")
+	def best_score_rate_course_search_object(self, *args):
+		logger.warning("DataStoreSmmServer.best_score_rate_course_search_object not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method82(self, *args):
-		logger.warning("DataStoreSmmServer.method82 not implemented")
+	def ctr_pick_up_course_search_object(self, *args):
+		logger.warning("DataStoreSmmServer.ctr_pick_up_course_search_object not implemented")
 		raise common.RMCError("Core::NotImplemented")
 	
-	def method87(self, *args):
-		logger.warning("DataStoreSmmServer.method87 not implemented")
+	def report_course(self, *args):
+		logger.warning("DataStoreSmmServer.report_course not implemented")
 		raise common.RMCError("Core::NotImplemented")
 

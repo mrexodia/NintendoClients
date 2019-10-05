@@ -34,13 +34,13 @@ client = datastoresmm.DataStoreSmmClient(backend.secure_client)
 import time
 time.sleep(20)
 
-response = client.method79(0)
+response = client.check_rate_custom_ranking_counter(0)
 print("response: {}".format(response))
 
 import time
 time.sleep(20)
 
-response = client.method79(0)
+response = client.check_rate_custom_ranking_counter(0)
 print("response: {}".format(response))
 
 backend.close()
